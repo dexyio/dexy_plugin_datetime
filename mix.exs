@@ -28,7 +28,8 @@ defmodule DexyPluginDatetime.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:dexy_lib, github: "dexyio/dexy_lib"}
+      {:dexy_lib, github: "dexyio/dexy_lib"},
+      {:timex, "~> 3.0"}
     ]
   end
 end
