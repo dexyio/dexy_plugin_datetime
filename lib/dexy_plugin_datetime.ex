@@ -28,7 +28,9 @@ defmodule DexyPluginDatetime do
     @callback to_map(datetime) :: map | FunctionClauseError
     @callback to_string(datetime) :: bitstring | FunctionClauseError
 
-    @callback from(:secs|:msecs|:usecs, number) :: datetime | {:error, reason}
+
+    @type from_type :: :secs | :msecs | :usecs | bitstring
+    @callback from(from_type, number) :: datetime | {:error, reason}
   end
 
   use DexyLib, as: Lib
@@ -67,19 +69,29 @@ defmodule DexyPluginDatetime do
     end
   end
 
-  def from_secs state = %{args: []} do do_from(state, :secs, data! state) end
-  def from_secs state = %{args: [num]} do do_from(state, :secs, num) end
+  def from_string state = %{args: []} do do_from_string state, data! state end
+  def from_string state = %{args: [str]} do do_from_string state, str end
 
-  def from_msecs state = %{args: []} do do_from(state, :msecs, data! state) end
-  def from_msecs state = %{args: [num]} do do_from(state, :msecs, num) end
+  def from_secs state = %{args: []} do do_from_number(state, :secs, data! state) end
+  def from_secs state = %{args: [num]} do do_from_number(state, :secs, num) end
 
-  def from_usecs state = %{args: []} do do_from(state, :usecs, data! state) end
-  def from_usecs state = %{args: [num]} do do_from(state, :usecs, num) end
+  def from_msecs state = %{args: []} do do_from_number(state, :msecs, data! state) end
+  def from_msecs state = %{args: [num]} do do_from_number(state, :msecs, num) end
 
-  defp do_from(state, type, num) when num > 0 and num < @max_usecs do
+  def from_usecs state = %{args: []} do do_from_number(state, :usecs, data! state) end
+  def from_usecs state = %{args: [num]} do do_from_number(state, :usecs, num) end
+
+  defp do_from_number(state, type, num) when num > 0 and num < @max_usecs do
     case @adapter.from type, num do
       %DateTime{} = dt -> {state, dt}
       _ -> {state, nil}
+    end
+  end
+
+  defp do_from_string(state, str) when is_bitstring(str) do
+    case @adapter.from :string, str do
+      {:ok, %DateTime{} = dt} -> {state, dt}
+      {:error, _} -> {state, nil}
     end
   end
 

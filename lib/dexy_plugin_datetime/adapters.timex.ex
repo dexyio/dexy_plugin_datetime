@@ -14,8 +14,15 @@ defmodule DexyPluginDatetime.Adapters.Timex do
   def from :msecs, num do Timex.from_unix num, :milliseconds end
   def from :usecs, num do Timex.from_unix num, :microseconds end
 
+  def from(:string, str) do
+    ~R"([0-9]{4})[-/ ]?(0[0-9]|1[12])[-/ ]?(0[1-9]|[12][0-9]|3[01])[T ]?([01][0-9]|2[0-3]):?([0-5][0-9]):?([0-5][0-9])"u
+    |> Regex.replace(str, "\\1-\\2-\\3T\\4:\\5:\\6Z")
+    |> Timex.parse("{ISO:Extended}")
+  end
+
   def to_map datetime do
     %{
+      "calendar" => datetime.calendar,
       "time_zone" => datetime.time_zone,
       "zone_abbr" => datetime.zone_abbr,
       "year" => datetime.year,

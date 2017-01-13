@@ -34,6 +34,8 @@ defmodule DexyPluginDatetimeTest do
     assert dt_secs == DT.from_secs(%{args: [secs]}) |> elem(1) 
     assert dt_msecs == DT.from_msecs(%{args: [msecs]}) |> elem(1) 
     assert dt_usecs == DT.from_usecs(%{args: [usecs]}) |> elem(1) 
+
+    assert %DateTime{} = DT.from_string(%{args: ["20170101125959"]}) |> elem(1)
   end
 
 end
