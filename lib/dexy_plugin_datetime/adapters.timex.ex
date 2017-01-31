@@ -3,7 +3,7 @@ defmodule DexyPluginDatetime.Adapters.Timex do
   use DexyLib, as: Lib
   use Timex
 
-  @app :dexy_plugin_datetime
+  #@app :dexy_plugin_datetime
   @behaviour DexyPluginDatetime.Adapter
 
   def now timezone do
